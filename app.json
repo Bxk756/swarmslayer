@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "SwarmSlayer",
+    "slug": "swarmslayer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "android": {
+      "package": "com.swarmslayer.app"
+    }
+  }
+}
