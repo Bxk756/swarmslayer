@@ -5,8 +5,10 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
+    "icon": "./assets/logo.png",
     "android": {
       "package": "com.swarmslayer.app"
     }
   }
 }
+
