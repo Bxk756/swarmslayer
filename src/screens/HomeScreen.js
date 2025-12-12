@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import Header from "../components/Header";
+
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import * as Haptics from "expo-haptics";
 import { styles } from "../ui/styles";
