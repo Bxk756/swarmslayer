@@ -2,10 +2,10 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 
-// import your screens
+import HomeScreen from "../screens/HomeScreen";
 import ScanScreen from "../screens/ScanScreen";
-import DeterrentScreen from "../screens/DeterrentScreen";
 import HistoryScreen from "../screens/HistoryScreen";
+import ReportScreen from "../screens/ReportScreen";
 import AboutScreen from "../screens/AboutScreen";
 
 const Tab = createBottomTabNavigator();
@@ -22,22 +22,37 @@ export default function Tabs() {
         tabBarActiveTintColor: "#ef4444",
         tabBarInactiveTintColor: "#64748b",
         tabBarIcon: ({ color, size }) => {
-          let icon;
+          let iconName;
 
-          if (route.name === "Scan") icon = "shield-checkmark";
-          if (route.name === "Deterrent") icon = "megaphone";
-          if (route.name === "History") icon = "time";
-          if (route.name === "About") icon = "information-circle";
+          switch (route.name) {
+            case "Home":
+              iconName = "home";
+              break;
+            case "Scan":
+              iconName = "shield-checkmark";
+              break;
+            case "History":
+              iconName = "time";
+              break;
+            case "Report":
+              iconName = "alert-circle";
+              break;
+            case "About":
+              iconName = "information-circle";
+              break;
+            default:
+              iconName = "ellipse";
+          }
 
-          return <Ionicons name={icon} size={size} color={color} />;
+          return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
     >
+      <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Scan" component={ScanScreen} />
-      <Tab.Screen name="Deterrent" component={DeterrentScreen} />
       <Tab.Screen name="History" component={HistoryScreen} />
+      <Tab.Screen name="Report" component={ReportScreen} />
       <Tab.Screen name="About" component={AboutScreen} />
     </Tab.Navigator>
   );
 }
-
