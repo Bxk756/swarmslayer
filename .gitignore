@@ -1,6 +1,20 @@
+<<<<<<< HEAD
 node_modules/
 .expo/
 dist/
 build/
 .DS_Store
 *.log
+=======
+# Expo
+.expo/
+
+# Dependencies
+node_modules/
+
+# npm
+package-lock.json
+
+# OS
+.DS_Store
+>>>>>>> 736d5ff (Update Expo deps, navigation tabs, and gitignore)
