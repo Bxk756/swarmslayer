@@ -1,47 +1,38 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import { View, Text, Image, StyleSheet, Pressable, Platform } from "react-native";
+import { Asset } from "expo-asset";
 
-// ✅ Correct Expo asset import (this fixes prod + web)
-import logo from "./assets/logo.png";
+const logoAsset = Asset.fromModule(require("./assets/logo.png"));
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
-
-      {/* Logo */}
       <Image
-        source={logo}
+        source={{ uri: logoAsset.uri }}
         style={styles.logo}
         resizeMode="contain"
         accessibilityLabel="SwarmSlayer Logo"
       />
 
-      {/* Title */}
       <Text style={styles.title}>SwarmSlayer</Text>
 
-      {/* Subtitle */}
       <Text style={styles.subtitle}>
-        A scam awareness and deterrence assistant designed to help users
-        identify, document, and report suspicious calls — safely and responsibly.
+        A scam awareness and deterrence assistant designed to help users identify,
+        document, and report suspicious calls — safely and responsibly.
       </Text>
 
-      {/* Buttons */}
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.primaryButton}>
+        <Pressable style={styles.primaryButton}>
           <Text style={styles.buttonText}>Coming Soon on Google Play</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity style={styles.secondaryButton}>
+        <Pressable style={styles.secondaryButton}>
           <Text style={styles.buttonText}>Contact Support</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );
 }
-
-/* ===================== STYLES ===================== */
 
 const styles = StyleSheet.create({
   container: {
@@ -49,55 +40,46 @@ const styles = StyleSheet.create({
     backgroundColor: "#020617",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
   },
-
   logo: {
-    width: 220,
-    height: 220,
-    marginBottom: 24,
+    width: 260,
+    height: 260,
+    marginBottom: 30,
   },
-
   title: {
     fontSize: 36,
-    fontWeight: "700",
+    fontWeight: "bold",
     color: "#ffffff",
     marginBottom: 12,
+    textAlign: "center",
   },
-
   subtitle: {
     fontSize: 16,
-    color: "#cbd5e1",
+    color: "#94a3b8",
     textAlign: "center",
     maxWidth: 520,
-    marginBottom: 32,
-    lineHeight: 24,
+    marginBottom: 40,
   },
-
   buttonRow: {
-    flexDirection: "row",
+    flexDirection: Platform.OS === "web" ? "row" : "column",
     gap: 16,
-    flexWrap: "wrap",
-    justifyContent: "center",
   },
-
   primaryButton: {
     backgroundColor: "#ef4444",
     paddingVertical: 14,
-    paddingHorizontal: 22,
+    paddingHorizontal: 24,
     borderRadius: 999,
   },
-
   secondaryButton: {
     backgroundColor: "#ef4444",
     paddingVertical: 14,
-    paddingHorizontal: 22,
+    paddingHorizontal: 24,
     borderRadius: 999,
   },
-
   buttonText: {
     color: "#ffffff",
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "600",
   },
 });
