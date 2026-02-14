@@ -1,0 +1,21 @@
+{
+  "name": "SwarmSlayer",
+  "short_name": "SwarmSlayer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0e1a2b",
+  "theme_color": "#ff8c00",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/assets/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

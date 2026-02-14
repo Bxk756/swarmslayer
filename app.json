@@ -4,17 +4,11 @@
     "slug": "swarmslayer",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo.png",
-    "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#020617"
-    },
-    "assetBundlePatterns": ["**/*"],
+    "platforms": ["ios", "android", "web"],
+    "jsEngine": "hermes",
     "web": {
-      "favicon": "./assets/logo.png"
+      "bundler": "metro",
+      "output": "single"
     }
   }
 }
-

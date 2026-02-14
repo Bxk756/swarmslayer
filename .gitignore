@@ -18,3 +18,4 @@ package-lock.json
 # OS
 .DS_Store
 >>>>>>> 736d5ff (Update Expo deps, navigation tabs, and gitignore)
+.vercel
