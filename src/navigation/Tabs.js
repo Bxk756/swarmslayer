@@ -1,12 +1,14 @@
-import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 
-import HomeScreen from "../screens/HomeScreen";
-import ScanScreen from "../screens/ScanScreen";
-import HistoryScreen from "../screens/HistoryScreen";
-import ReportScreen from "../screens/ReportScreen";
-import AboutScreen from "../screens/AboutScreen";
+// Screens
+import ScanScreen from '../screens/ScanScreen';
+import StatsScreen from '../screens/StatsScreen';
+import DeterrentScreen from '../screens/DeterrentScreen';
+import HistoryScreen from '../screens/HistoryScreen';
+import EducationScreen from '../screens/EducationScreen';
+import AboutScreen from '../screens/AboutScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -16,42 +18,39 @@ export default function Tabs() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#020617",
-          borderTopColor: "#1e293b",
+          backgroundColor: '#0a0f1c',
+          borderTopColor: '#1c2438',
+          height: 65,
+          paddingBottom: 8,
         },
-        tabBarActiveTintColor: "#ef4444",
-        tabBarInactiveTintColor: "#64748b",
+        tabBarActiveTintColor: '#22c55e',
+        tabBarInactiveTintColor: '#64748b',
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
-          switch (route.name) {
-            case "Home":
-              iconName = "home";
-              break;
-            case "Scan":
-              iconName = "shield-checkmark";
-              break;
-            case "History":
-              iconName = "time";
-              break;
-            case "Report":
-              iconName = "alert-circle";
-              break;
-            case "About":
-              iconName = "information-circle";
-              break;
-            default:
-              iconName = "ellipse";
+          if (route.name === 'Scan') {
+            iconName = 'shield-checkmark';
+          } else if (route.name === 'Stats') {
+            iconName = 'stats-chart';
+          } else if (route.name === 'Deterrent') {
+            iconName = 'megaphone';
+          } else if (route.name === 'History') {
+            iconName = 'time';
+          } else if (route.name === 'Education') {
+            iconName = 'school';
+          } else if (route.name === 'About') {
+            iconName = 'information-circle';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Scan" component={ScanScreen} />
+      <Tab.Screen name="Stats" component={StatsScreen} />
+      <Tab.Screen name="Deterrent" component={DeterrentScreen} />
       <Tab.Screen name="History" component={HistoryScreen} />
-      <Tab.Screen name="Report" component={ReportScreen} />
+      <Tab.Screen name="Education" component={EducationScreen} />
       <Tab.Screen name="About" component={AboutScreen} />
     </Tab.Navigator>
   );

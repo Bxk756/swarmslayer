@@ -1,183 +1,170 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
-  StyleSheet,
   TextInput,
-  Alert
+  StyleSheet,
+  Pressable,
+  ScrollView,
+  Alert,
 } from "react-native";
-import * as Haptics from "expo-haptics";
+import { useNavigation } from "@react-navigation/native";
 
-import { getDefenseMode } from "../services/defenseMode";
-import { addHistory } from "../services/history";
-
-/**
- * Defensive intent classifier
- * Local-only, deterministic, non-exploitable
- */
-function scoreIntent({ notes }) {
-  let score = 0;
-
-  const indicators = [
-    /refund/i,
-    /gift.?card/i,
-    /crypto|bitcoin/i,
-    /urgent|immediately/i,
-    /verify|confirm/i,
-    /account|login/i,
-    /bank|wire/i,
-    /password|code/i,
-    /microsoft|apple|amazon/i,
-    /suspended|locked/i
-  ];
-
-  indicators.forEach((rx) => {
-    if (rx.test(notes)) score += 2;
-  });
-
-  let level = "LOW";
-  if (score >= 6) level = "HIGH";
-  else if (score >= 3) level = "MEDIUM";
-
-  return { score, level };
-}
+import { analyzeScan } from "../utils/scanLogic";
+import { saveScan } from "../utils/historyStorage";
 
 export default function ScanScreen() {
-  const [notes, setNotes] = useState("");
+  const navigation = useNavigation();
 
-  const result = useMemo(
-    () => scoreIntent({ notes }),
-    [notes]
-  );
+  const [input, setInput] = useState("");
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  async function runScan() {
-    if (!notes.trim()) {
-      Alert.alert("Nothing to scan", "Enter a message or behavior to analyze.");
+  const handleScan = async () => {
+    if (!input.trim()) {
+      Alert.alert("Enter something to scan");
       return;
     }
 
-    const mode = await getDefenseMode();
+    setLoading(true);
 
-    // Haptic feedback (defensive signaling)
-    if (result.level === "HIGH") {
-      await Haptics.notificationAsync(
-        Haptics.NotificationFeedbackType.Error
-      );
-    } else if (result.level === "MEDIUM") {
-      await Haptics.notificationAsync(
-        Haptics.NotificationFeedbackType.Warning
-      );
+    try {
+      // Run weighted scoring engine
+      const analysis = analyzeScan(input);
+
+      // Save to history
+      await saveScan({
+        ...analysis,
+        content: input,
+        date: new Date().toISOString(),
+      });
+
+      setResult(analysis);
+
+      // Navigate to History after slight delay
+      setTimeout(() => {
+        navigation.navigate("History");
+      }, 800);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Scan failed");
     }
 
-    // Persist locally (swarm memory)
-    await addHistory({
-      ts: Date.now(),
-      notes,
-      score: result.score,
-      level: result.level
-    });
-
-    // Auto-deny guidance (not OS blocking)
-    if (mode === "AUTO_DENY" && result.level === "HIGH") {
-      Alert.alert(
-        "Interaction Denied",
-        "Strong indicators of malicious intent detected.\n\nRecommendation: Do not engage or respond.",
-        [{ text: "Understood" }]
-      );
-      return;
-    }
-
-    // Warn / informational mode
-    Alert.alert(
-      "Defense Assessment",
-      `${result.level} RISK\nScore: ${result.score}\n\nAnalysis performed locally.\nNo data transmitted.`,
-      [{ text: "OK" }]
-    );
-  }
+    setLoading(false);
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>SwarmSlayer Scan</Text>
-
-      <Text style={styles.text}>
-        Analyze messages and behaviors to prevent malicious intent before it
-        becomes actionable.
-      </Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Scan Suspicious Message</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Paste message, call notes, or behavior details"
-        placeholderTextColor="#94a3b8"
-        value={notes}
-        onChangeText={setNotes}
+        placeholder="Paste suspicious message or phone number..."
+        placeholderTextColor="#888"
         multiline
+        value={input}
+        onChangeText={setInput}
       />
 
-      <TouchableOpacity style={styles.button} onPress={runScan}>
-        <Text style={styles.buttonText}>Run Defense Scan</Text>
-      </TouchableOpacity>
-
-      <View style={styles.pill}>
-        <Text style={styles.pillText}>
-          {result.level} RISK • SCORE {result.score}
+      <Pressable style={styles.button} onPress={handleScan}>
+        <Text style={styles.buttonText}>
+          {loading ? "Scanning..." : "Run Scan"}
         </Text>
-      </View>
-    </View>
+      </Pressable>
+
+      {result && (
+        <View style={styles.resultBox}>
+          <Text style={styles.score}>
+            Threat Score: {result.score}/100
+          </Text>
+
+          <Text
+            style={[
+              styles.level,
+              result.level === "High"
+                ? styles.high
+                : result.level === "Medium"
+                ? styles.medium
+                : styles.low,
+            ]}
+          >
+            Risk Level: {result.level}
+          </Text>
+
+          <Text style={styles.detailsTitle}>Detected Signals:</Text>
+
+          {result.flags.map((flag, index) => (
+            <Text key={index} style={styles.flag}>
+              • {flag}
+            </Text>
+          ))}
+        </View>
+      )}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#020617",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: "#0f172a",
   },
   title: {
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: "bold",
-    color: "#22c55e",
-    marginBottom: 12
-  },
-  text: {
-    fontSize: 15,
-    color: "#cbd5f5",
-    textAlign: "center",
-    marginBottom: 20
+    color: "#fff",
+    marginBottom: 15,
   },
   input: {
-    width: "100%",
+    backgroundColor: "#1e293b",
+    padding: 15,
+    borderRadius: 10,
     minHeight: 120,
-    backgroundColor: "#020617",
-    borderColor: "#334155",
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
     color: "#fff",
-    marginBottom: 20
+    marginBottom: 15,
   },
   button: {
-    backgroundColor: "#22c55e",
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    borderRadius: 8
+    backgroundColor: "#f97316",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 20,
   },
   buttonText: {
-    color: "#020617",
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  resultBox: {
+    backgroundColor: "#1e293b",
+    padding: 15,
+    borderRadius: 10,
+  },
+  score: {
+    color: "#fff",
+    fontSize: 18,
+    marginBottom: 8,
+  },
+  level: {
     fontSize: 16,
-    fontWeight: "bold"
+    marginBottom: 10,
   },
-  pill: {
-    marginTop: 16,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 999,
-    backgroundColor: "#0f172a"
+  high: {
+    color: "#ef4444",
   },
-  pillText: {
-    color: "#38bdf8",
-    fontWeight: "600"
-  }
+  medium: {
+    color: "#facc15",
+  },
+  low: {
+    color: "#22c55e",
+  },
+  detailsTitle: {
+    color: "#fff",
+    fontWeight: "bold",
+    marginBottom: 6,
+  },
+  flag: {
+    color: "#cbd5e1",
+    marginBottom: 4,
+  },
 });
